@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 337e3a14f2e8431a8c483d6a93ebfcc9
+labels:
+- gvh
+- gvh_rename_to_disable
+- gvh_version-1.2.150
+- gvhp_exportpath-ExternalDependencyManager/Editor/Google.UnityPackageManagerResolver_v1.2.150.dll.mdb
+- gvhp_targets-editor
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
