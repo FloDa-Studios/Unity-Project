@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 0
+    path: 
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/ShipFramework/ShipFr.unity
+    guid: 017bc1359fb821c4786c29769facc2a2
+  - enabled: 1
+    path: Assets/Scenes/HomeBase/HomeBase.unity
+    guid: a92338c3f202e664b97a85a19c740b90
+  - enabled: 1
+    path: Assets/Scenes/HomeBase/HomeBaseModules/BridgeMM.unity
+    guid: 74fdc58a97e5240409d1938e7693f07e
+  - enabled: 1
+    path: Assets/Scenes/HomeBase/HomeBaseModules/CrewMM.unity
+    guid: 33b8ca898b11da54cb5034cd6918a4ec
+  - enabled: 1
+    path: Assets/Scenes/HomeBase/HomeBaseModules/HangarMM.unity
+    guid: a09ecab33ba4eac48972cc09d1131085
+  - enabled: 1
+    path: Assets/Scenes/HomeBase/HomeBaseModules/LabMM.unity
+    guid: e166e48a92ef01d4d81e620904052430
+  - enabled: 1
+    path: Assets/Scenes/HomeBase/HomeBaseModules/RefineryMM.unity
+    guid: d60e3a10dd5e6de42a257006003a84ff
+  - enabled: 1
+    path: Assets/Scenes/HomeBase/HomeBaseModules/StorageMM.unity
+    guid: 0be89473fa8ccc84683a8b3abf8da294
+  m_configObjects: {}
