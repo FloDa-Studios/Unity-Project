@@ -5,7 +5,7 @@ using System.IO;
 using FloDa.Utils;
 using UnityEngine.Tilemaps;
 
-public class BuildFramework : ClassInstance<BuildFramework>
+public class BuildFramework
 {
 
     public Tilemap tilemapGetTiles;
@@ -25,12 +25,12 @@ public class BuildFramework : ClassInstance<BuildFramework>
         SetTile(Utils.GridArrayToWorldPosition(new Vector3Int(x, y, 0)),currentTile);
     }
 
-    public void Initialize()
+    public BuildFramework()
     {
         tilemap = GameObject.Find("Tilemap_Ship").GetComponent<Tilemap>();
         wallmap = GameObject.Find("Tilemap_SpaceWall").GetComponent<Tilemap>();
         tilemapGetTiles = GameObject.Find("Tilemap_GetTiles").GetComponent<Tilemap>();
-        connectorTile = tilemapGetTiles.GetTile<AdvancedRuleTile>(new Vector3Int(0,-1,0));
+        connectorTile = tilemapGetTiles.GetTile<AdvancedRuleTile>(new Vector3Int(0, -1, 0));
         cockpitTile = tilemapGetTiles.GetTile<AdvancedRuleTile>(new Vector3Int(2, -1, 0));
         hardpointTile = tilemapGetTiles.GetTile<AdvancedRuleTile>(new Vector3Int(4, -1, 0));
         reactorTile = tilemapGetTiles.GetTile<AdvancedRuleTile>(new Vector3Int(6, -1, 0));
@@ -42,7 +42,6 @@ public class BuildFramework : ClassInstance<BuildFramework>
         control = GameObject.Find("ShipData").GetComponent<ShipDataControl>();
         originPosition = control.gridOffset;
         cellSize = control.gridCellSize;
-
     }
 
     public void SetTile(Vector3Int pos, AdvancedRuleTile tile)

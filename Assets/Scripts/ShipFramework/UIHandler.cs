@@ -8,7 +8,7 @@ using FloDa.Utils;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 
-public class UIHandler : ClassInstance<UIHandler>
+public class UIHandler : MonoBehaviour
 {
     public GameObject txtCockpit;
     public GameObject txtHardpoints;
@@ -19,7 +19,7 @@ public class UIHandler : ClassInstance<UIHandler>
     bool wereCreated = false;
     public TextMeshProUGUI tC, tH, tR, tE;
 
-    protected UIHandler() { }
+    public UIHandler() { }
 
     private void Start()
     {

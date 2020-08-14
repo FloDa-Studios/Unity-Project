@@ -35,7 +35,7 @@ public class Ship
 
 }
 
-public class ShipFramework : ClassInstance<ShipFramework>
+public class ShipFramework
 {
     public int shipIndex;
 
@@ -43,9 +43,7 @@ public class ShipFramework : ClassInstance<ShipFramework>
 
     public static bool ranOnce;
 
-    protected ShipFramework() {}
-
-    public void Initialize()
+    public ShipFramework()
     {
         if (!ranOnce)
         {
@@ -58,6 +56,5 @@ public class ShipFramework : ClassInstance<ShipFramework>
             return;
         }
     }
-
     
 }
