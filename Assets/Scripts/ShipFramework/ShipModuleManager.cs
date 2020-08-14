@@ -52,7 +52,7 @@ public class ShipModule
     }
 }
 
-public class ShipModuleManager : ClassInstance<ShipModuleManager>
+public class ShipModuleManager
 {
     public ShipModule genericModule;
 
@@ -61,10 +61,7 @@ public class ShipModuleManager : ClassInstance<ShipModuleManager>
 
     public static bool ranOnce;
 
-    protected ShipModuleManager() {}
-
-    public int Initialize()
-    {
+    public ShipModuleManager() {
         if (!ranOnce)
         {
             shipModuleTypes.Add(new ShipModule("Cockpit", 1, 0));
@@ -75,9 +72,7 @@ public class ShipModuleManager : ClassInstance<ShipModuleManager>
             shipModuleTypes.Add(new ShipModule("Storage", 6, 0));
             shipModuleTypes.Add(new ShipModule("Bedroom", 7, 0));
             ranOnce = true;
-            return 1;
         }
-        return 0;
     }
 
     public void SetAllModules(ShipGrid grid)

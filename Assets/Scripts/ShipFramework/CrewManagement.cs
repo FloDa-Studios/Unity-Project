@@ -67,7 +67,7 @@ public class CrewMan
 }
 
 
-public class CrewManagement : ClassInstance<CrewManagement>
+public class CrewManagement
 {
     bool ranOnce;
 
@@ -87,14 +87,12 @@ public class CrewManagement : ClassInstance<CrewManagement>
     public List<CrewMan> crewMen;
     public List<TileBase> tiles;
 
-    protected CrewManagement() { }
-
-    public void Initialize()
-    {
+    public CrewManagement() { 
         Debug.Log("CrewManagement initialisert!");
     }
 
-    public void Initialize(int crewMax, int crewCount, ShipGrid grid)
+
+    public CrewManagement(int crewMax, int crewCount, ShipGrid grid)
     {
         crewMen = new List<CrewMan>();
         tiles = new List<TileBase>();

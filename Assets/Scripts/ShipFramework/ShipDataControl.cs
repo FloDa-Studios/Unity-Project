@@ -32,7 +32,11 @@ public class ShipDataControl : MonoBehaviour
 
     public GameObject CrewUI, ShipUI, BuildUI;
 
-    int returnValue;
+    public ShipFramework shipFramework;
+    public BuildFramework buildFramework;
+    public ShipModuleManager shipModuleManager;
+    public CrewManagement crewManagement;
+    public UIHandler uiHandler;
 
     public static bool ranOnce;
 
@@ -60,36 +64,23 @@ public class ShipDataControl : MonoBehaviour
             panel.transform.localPosition = new Vector3(122 + 240*i, -100, 0);
             panel.GetComponentInChildren<TextMeshProUGUI>().text = "Ship " + i;
         }
-        
-        ShipFramework.Instance.Initialize();
 
-        BuildFramework.Instance.Initialize();
-
-        shipIndex = ShipFramework.Instance.shipIndex;
-
+        shipFramework = new ShipFramework();
+        buildFramework = new BuildFramework();
         grid = new ShipGrid();
+        shipModuleManager = new ShipModuleManager();
+        crewManagement = new CrewManagement(15, 14, grid);
+        uiHandler = new UIHandler();
+
+        shipIndex = shipFramework.shipIndex;
         grid.SetMap();
 
-        returnValue = ShipModuleManager.Instance.Initialize();
-
-        ShipModuleManager.Instance.shipModules = new List<ShipModule>();
-
-        if (returnValue == 1)
-        {
-            Debug.Log("ShipModuleManager initialisert!");
-        }
-        else if (returnValue == 0)
-        {
-            Debug.Log("ShipModuleManager existiert bereits!");
-        }
-
-        CrewManagement.Instance.Initialize(15, 14, grid);
-        UIHandler.Instance.Initialize();
+        //shipModuleManager.shipModules = new List<ShipModule>();
     }
 
     public void SetAllModules()
     {
-        ShipModuleManager.Instance.SetAllModules(grid);
+        shipModuleManager.SetAllModules(grid);
     }
 
     public void SavePresets()
@@ -125,15 +116,15 @@ public class ShipDataControl : MonoBehaviour
         SetAllModules();
 
         BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Create(Application.persistentDataPath + "/crewPresetShip_" + ShipFramework.Instance.shipIndex + ".dat");
+        FileStream file = File.Create(Application.persistentDataPath + "/crewPresetShip_" + shipFramework.shipIndex + ".dat");
 
-        CrewDataSave data = new CrewDataSave();
+        CrewDataSave data = new CrewDataSave(crewManagement,shipModuleManager);
 
         bf.Serialize(file, data);
         file.Close();
 
         BinaryFormatter bf2 = new BinaryFormatter();
-        FileStream file2 = File.Create(Application.persistentDataPath + "/shipTileData_" + ShipFramework.Instance.shipIndex + ".dat");
+        FileStream file2 = File.Create(Application.persistentDataPath + "/shipTileData_" + shipFramework.shipIndex + ".dat");
 
         TileMapSave data2 = new TileMapSave();
         bf2.Serialize(file2, data2);
@@ -144,16 +135,16 @@ public class ShipDataControl : MonoBehaviour
 
     public void LoadCrewPreset()
     {
-        if (File.Exists(Application.persistentDataPath + "/shipTileData_" + ShipFramework.Instance.shipIndex + ".dat"))
+        if (File.Exists(Application.persistentDataPath + "/shipTileData_" + shipFramework.shipIndex + ".dat"))
         {
 
             BinaryFormatter bf2 = new BinaryFormatter();
-            FileStream file2 = File.Open(Application.persistentDataPath + "/shipTileData_" + ShipFramework.Instance.shipIndex + ".dat", FileMode.Open);
+            FileStream file2 = File.Open(Application.persistentDataPath + "/shipTileData_" + shipFramework.shipIndex + ".dat", FileMode.Open);
             TileMapSave data2 = (TileMapSave)bf2.Deserialize(file2);
             file2.Close();
             AdvancedRuleTile tile;
 
-            BuildFramework.Instance.ClearAllTiles();
+            buildFramework.ClearAllTiles();
 
             for (int x = 0; x < data2.sizex; x++)
             {
@@ -163,49 +154,49 @@ public class ShipDataControl : MonoBehaviour
 
                     if (value == 1)
                     {
-                        tile = BuildFramework.Instance.connectorTile;
-                        BuildFramework.Instance.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
+                        tile = buildFramework.connectorTile;
+                        buildFramework.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
                     }
                     if (value == 2)
                     {
-                        tile = BuildFramework.Instance.cockpitTile;
-                        BuildFramework.Instance.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
+                        tile = buildFramework.cockpitTile;
+                        buildFramework.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
                     }
                     if (value == 3)
                     {
-                        tile = BuildFramework.Instance.hardpointTile;
-                        BuildFramework.Instance.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
+                        tile = buildFramework.hardpointTile;
+                        buildFramework.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
                     }
                     if (value == 4)
                     {
-                        tile = BuildFramework.Instance.reactorTile;
-                        BuildFramework.Instance.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
+                        tile = buildFramework.reactorTile;
+                        buildFramework.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
                     }
                     if (value == 5)
                     {
-                        tile = BuildFramework.Instance.engineroomTile;
-                        BuildFramework.Instance.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
+                        tile = buildFramework.engineroomTile;
+                        buildFramework.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
                     }
                     if (value == 6)
                     {
-                        tile = BuildFramework.Instance.engineTile;
-                        BuildFramework.Instance.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
+                        tile = buildFramework.engineTile;
+                        buildFramework.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
                     }
                     if (value == 7)
                     {
-                        tile = BuildFramework.Instance.storageTile;
-                        BuildFramework.Instance.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
+                        tile = buildFramework.storageTile;
+                        buildFramework.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
                     }
                     if (value == 8)
                     {
-                        tile = BuildFramework.Instance.bedroomTile;
-                        BuildFramework.Instance.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
+                        tile = buildFramework.bedroomTile;
+                        buildFramework.SetTile(new Vector3Int(x + data2.minx, y + data2.miny, 0), tile);
                     }
                 }
             }
         }
 
-        UIHandler.Instance.UpdateHP();
+        uiHandler.UpdateHP();
         grid.SetMap();
         SetAllModules();
 
@@ -216,24 +207,24 @@ public class ShipDataControl : MonoBehaviour
             CrewDataSave data = (CrewDataSave)bf.Deserialize(file);
             file.Close();
 
-            CrewManagement.Instance.crewCockpit = data.crewCockpit;
-            CrewManagement.Instance.crewHardpoints = data.crewHardpoints;
-            CrewManagement.Instance.crewReactor = data.crewReactor;
-            CrewManagement.Instance.crewEngineroom = data.crewEngineroom;
-            CrewManagement.Instance.crewUsed = data.crewUsed;
+            crewManagement.crewCockpit = data.crewCockpit;
+            crewManagement.crewHardpoints = data.crewHardpoints;
+            crewManagement.crewReactor = data.crewReactor;
+            crewManagement.crewEngineroom = data.crewEngineroom;
+            crewManagement.crewUsed = data.crewUsed;
 
-            for (int i = 1; i < ShipModuleManager.Instance.shipModuleTypes.Count; i++)
+            for (int i = 1; i < shipModuleManager.shipModuleTypes.Count; i++)
             {
-                foreach (ShipModule mod in ShipModuleManager.Instance.shipModules)
+                foreach (ShipModule mod in shipModuleManager.shipModules)
                 {
                     if (data.shipModuleCrewWorking[mod.moduleID][mod.modulePartIndex])
                     {
-                        ShipModuleManager.Instance.GetModuleTypeList(mod.moduleID).Find(x => x.modulePartIndex == mod.modulePartIndex).SetManned();
+                        shipModuleManager.GetModuleTypeList(mod.moduleID).Find(x => x.modulePartIndex == mod.modulePartIndex).SetManned();
                     } 
                 }
             }
 
-            CrewManagement.Instance.UpdateCrew(grid);
+            crewManagement.UpdateCrew(grid);
             //UIHandler.Instance.Initialize();
             //UIHandler.Instance.UpdateUI();
             //UIHandler.Instance.UpdateText();
@@ -333,21 +324,28 @@ class TileMapSave
 [Serializable]
 class CrewDataSave
 {
-    public int crewCockpit = CrewManagement.Instance.crewCockpit;
-    public int crewHardpoints = CrewManagement.Instance.crewHardpoints;
-    public int crewReactor = CrewManagement.Instance.crewReactor;
-    public int crewEngineroom = CrewManagement.Instance.crewEngineroom;
-    public int crewUsed = CrewManagement.Instance.crewUsed;
-    public bool[][] shipModuleCrewWorking = new bool[ShipModuleManager.Instance.shipModuleTypes.Count+1][];
+    public int crewCockpit;
+    public int crewHardpoints;
+    public int crewReactor;
+    public int crewEngineroom;
+    public int crewUsed;
+    public bool[][] shipModuleCrewWorking;
 
-    public CrewDataSave()
+    public CrewDataSave(CrewManagement crewManagement, ShipModuleManager shipModuleManager)
     {
-        for (int i = 1; i < ShipModuleManager.Instance.shipModuleTypes.Count; i++)
+        crewCockpit = crewManagement.crewCockpit;
+        crewHardpoints = crewManagement.crewHardpoints;
+        crewReactor = crewManagement.crewReactor;
+        crewEngineroom = crewManagement.crewEngineroom;
+        crewUsed = crewManagement.crewUsed;
+        shipModuleCrewWorking = new bool[shipModuleManager.shipModuleTypes.Count + 1][];
+
+        for (int i = 1; i < shipModuleManager.shipModuleTypes.Count; i++)
         {
-            foreach (ShipModule mod in ShipModuleManager.Instance.shipModules)
+            foreach (ShipModule mod in shipModuleManager.shipModules)
             {
-                shipModuleCrewWorking[mod.moduleID] = new bool[ShipModuleManager.Instance.GetModuleTypeList(mod.moduleID).Count];
-                bool isManned = ShipModuleManager.Instance.GetModuleTypeList(mod.moduleID).Find(x => x.modulePartIndex == mod.modulePartIndex).isManned;
+                shipModuleCrewWorking[mod.moduleID] = new bool[shipModuleManager.GetModuleTypeList(mod.moduleID).Count];
+                bool isManned = shipModuleManager.GetModuleTypeList(mod.moduleID).Find(x => x.modulePartIndex == mod.modulePartIndex).isManned;
                 shipModuleCrewWorking[mod.moduleID][mod.modulePartIndex] = isManned;
             }
         }
