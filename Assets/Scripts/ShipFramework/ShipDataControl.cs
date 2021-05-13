@@ -16,75 +16,67 @@ using UnityEngine.UI;
 
 public class ShipDataControl : MonoBehaviour
 {
-    public static ShipDataControl persistentData = null;
+    public GameObject tilemapGetTiles;
+    public GameObject tilemapShip, tilemapSpaceWall;
 
     public int gridWidth, gridHeight;
     public float gridCellSize;
     public Vector3 gridOffset;
-    int shipIndex;
+    
     public Type type;
-    public GameObject tilemap;
     public ShipGrid grid;
 
     public int garageSlotAmount;
-
     public GameObject GarageSlotPanel, stockPanel;
-
     public GameObject CrewUI, ShipUI, BuildUI;
 
-    int returnValue;
+    private ShipDataControl shipDataControl = null;
+    private int shipIndex;
 
-    public static bool ranOnce;
+    protected ShipDataControl() { }
 
-    private void Awake()
+    public void Awake()
     {
         Initialize();
     }
 
-    void Initialize()
+    public void Initialize()
     {
+        if (shipDataControl == null) {
+            shipDataControl = new ShipDataControl();
+        }
 
         //TODO: Modulanzahl festlegen und lesen/schreiben, CrewMember LoadLevel resistent machen
         //TODO: UI Rework vom Inspect Mode (Crew besser festlegen) evtl erst wenn rekrutierung fertig
         //FEATURE: AUSWERTUNG des Schiffs für andere Module einsehbar machen
         //FEATURE: Panzerung anbringen, Schildgenerator, funktionalität für Modulanzahl
-        //PLANNED: Türen einbauen, Hinergrund mit Markierung für Baubereich (evtl vergrößerbar)
+        //PLANNED: Türen einbauen, Hintergrund mit Markierung für Baubereich (evtl vergrößerbar)
 
-        GarageSlotPanel.GetComponent<RectTransform>().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, 0, garageSlotAmount*240);
+        GarageSlotPanel.GetComponent<RectTransform>().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Right, 0, garageSlotAmount * 240);
 
-        for (int i = 0; i < garageSlotAmount; i++)
-        {
+        for (int i = 0; i < garageSlotAmount; i++) {
             GameObject panel = Instantiate(stockPanel);
             panel.name = "Ship " + i;
             panel.transform.SetParent(GarageSlotPanel.transform);
-            panel.transform.localPosition = new Vector3(122 + 240*i, -100, 0);
+            panel.transform.localPosition = new Vector3(122 + 240 * i, -100, 0);
             panel.GetComponentInChildren<TextMeshProUGUI>().text = "Ship " + i;
         }
-        
-        ShipFramework.Instance.Initialize();
 
-        BuildFramework.Instance.Initialize();
+        ShipFramework.Instance.Initialize();
+        BuildFramework.Instance.Initialize(tilemapGetTiles, tilemapShip, tilemapSpaceWall, gridCellSize, gridOffset);
 
         shipIndex = ShipFramework.Instance.shipIndex;
 
         grid = new ShipGrid();
         grid.SetMap();
 
-        returnValue = ShipModuleManager.Instance.Initialize();
+        ShipModuleManager.Instance.Initialize();
 
         ShipModuleManager.Instance.shipModules = new List<ShipModule>();
 
-        if (returnValue == 1)
-        {
-            Debug.Log("ShipModuleManager initialisert!");
-        }
-        else if (returnValue == 0)
-        {
-            Debug.Log("ShipModuleManager existiert bereits!");
-        }
-
-        CrewManagement.Instance.Initialize(15, 14, grid);
+        CrewManagement.Instance.Initialize(grid);
         UIHandler.Instance.Initialize();
+
     }
 
     public void SetAllModules()
@@ -119,7 +111,7 @@ public class ShipDataControl : MonoBehaviour
         }
     }
 
-    public void SaveCrewPreset()
+    public void SaveShipPreset()
     {
         grid.SetMap();
         SetAllModules();
@@ -142,7 +134,10 @@ public class ShipDataControl : MonoBehaviour
         Debug.Log("Ship saved: " + Application.persistentDataPath);
     }
 
-    public void LoadCrewPreset()
+    /// <summary>
+    /// Loads all ShipData with CrewData of the current shipIndex stored in ShipFramework
+    /// </summary>
+    public void LoadShipPreset()
     {
         if (File.Exists(Application.persistentDataPath + "/shipTileData_" + ShipFramework.Instance.shipIndex + ".dat"))
         {
@@ -216,17 +211,19 @@ public class ShipDataControl : MonoBehaviour
             CrewDataSave data = (CrewDataSave)bf.Deserialize(file);
             file.Close();
 
-            CrewManagement.Instance.crewCockpit = data.crewCockpit;
-            CrewManagement.Instance.crewHardpoints = data.crewHardpoints;
-            CrewManagement.Instance.crewReactor = data.crewReactor;
-            CrewManagement.Instance.crewEngineroom = data.crewEngineroom;
-            CrewManagement.Instance.crewUsed = data.crewUsed;
+            CrewManagement.Instance.crewCockpit = data.getCrewCockpit();
+            CrewManagement.Instance.crewHardpoints = data.getCrewHardpoints();
+            CrewManagement.Instance.crewReactor = data.getCrewReactor();
+            CrewManagement.Instance.crewEngineroom = data.getCrewEngineroom();
+            CrewManagement.Instance.crewUsed = data.getCrewUsed();
+
+            bool[][] shipModuleCrewWorking = data.getShipModuleCrewWorking();
 
             for (int i = 1; i < ShipModuleManager.Instance.shipModuleTypes.Count; i++)
             {
                 foreach (ShipModule mod in ShipModuleManager.Instance.shipModules)
                 {
-                    if (data.shipModuleCrewWorking[mod.moduleID][mod.modulePartIndex])
+                    if (shipModuleCrewWorking[mod.moduleID][mod.modulePartIndex])
                     {
                         ShipModuleManager.Instance.GetModuleTypeList(mod.moduleID).Find(x => x.modulePartIndex == mod.modulePartIndex).SetManned();
                     } 
@@ -333,12 +330,12 @@ class TileMapSave
 [Serializable]
 class CrewDataSave
 {
-    public int crewCockpit = CrewManagement.Instance.crewCockpit;
-    public int crewHardpoints = CrewManagement.Instance.crewHardpoints;
-    public int crewReactor = CrewManagement.Instance.crewReactor;
-    public int crewEngineroom = CrewManagement.Instance.crewEngineroom;
-    public int crewUsed = CrewManagement.Instance.crewUsed;
-    public bool[][] shipModuleCrewWorking = new bool[ShipModuleManager.Instance.shipModuleTypes.Count+1][];
+    private int crewCockpit = CrewManagement.Instance.crewCockpit;
+    private int crewHardpoints = CrewManagement.Instance.crewHardpoints;
+    private int crewReactor = CrewManagement.Instance.crewReactor;
+    private int crewEngineroom = CrewManagement.Instance.crewEngineroom;
+    private int crewUsed = CrewManagement.Instance.crewUsed;
+    private bool[][] shipModuleCrewWorking = new bool[ShipModuleManager.Instance.shipModuleTypes.Count+1][];
 
     public CrewDataSave()
     {
@@ -351,5 +348,29 @@ class CrewDataSave
                 shipModuleCrewWorking[mod.moduleID][mod.modulePartIndex] = isManned;
             }
         }
+    }
+
+    public int getCrewCockpit() {
+        return crewCockpit;
+    }
+
+    public int getCrewHardpoints() {
+        return crewHardpoints;
+    }
+
+    public int getCrewReactor() {
+        return crewReactor;
+    }
+
+    public int getCrewEngineroom() {
+        return crewEngineroom;
+    }
+
+    public int getCrewUsed() {
+        return crewUsed;
+    }
+
+    public bool[][] getShipModuleCrewWorking() {
+        return shipModuleCrewWorking;
     }
 }

@@ -54,35 +54,31 @@ public class ShipModule
 
 public class ShipModuleManager : ClassInstance<ShipModuleManager>
 {
+    private ShipModuleManager shipModuleManager = null;
+
     public ShipModule genericModule;
 
     public List<ShipModule> shipModuleTypes = new List<ShipModule>();
     public List<ShipModule> shipModules = new List<ShipModule>();
 
-    public static bool ranOnce;
-
-    protected ShipModuleManager() {}
-
-    public int Initialize()
-    {
-        if (!ranOnce)
-        {
-            shipModuleTypes.Add(new ShipModule("Cockpit", 1, 0));
-            shipModuleTypes.Add(new ShipModule("Hardpoint", 2, 0));
-            shipModuleTypes.Add(new ShipModule("Reactor", 3, 0));
-            shipModuleTypes.Add(new ShipModule("Engineroom", 4, 0));
-            shipModuleTypes.Add(new ShipModule("Engine", 5, 0));
-            shipModuleTypes.Add(new ShipModule("Storage", 6, 0));
-            shipModuleTypes.Add(new ShipModule("Bedroom", 7, 0));
-            ranOnce = true;
-            return 1;
-        }
-        return 0;
+    protected ShipModuleManager() {
+        this.shipModuleTypes.Add(new ShipModule("Cockpit", 1, 0));
+        this.shipModuleTypes.Add(new ShipModule("Hardpoint", 2, 0));
+        this.shipModuleTypes.Add(new ShipModule("Reactor", 3, 0));
+        this.shipModuleTypes.Add(new ShipModule("Engineroom", 4, 0));
+        this.shipModuleTypes.Add(new ShipModule("Engine", 5, 0));
+        this.shipModuleTypes.Add(new ShipModule("Storage", 6, 0));
+        this.shipModuleTypes.Add(new ShipModule("Bedroom", 7, 0));
     }
 
-    public void SetAllModules(ShipGrid grid)
-    {
-        shipModules.Clear();
+    public void Initialize() {
+        if (shipModuleManager == null) {
+            this.shipModuleManager = new ShipModuleManager();
+        }
+    }
+
+    public void SetAllModules(ShipGrid grid) {
+        this.shipModules.Clear();
         foreach (ShipModule mod in shipModuleTypes)
         {
             int[,] positions = Utils.FindAllIndexOf(grid.gridArray, mod.moduleID);
@@ -95,32 +91,27 @@ public class ShipModuleManager : ClassInstance<ShipModuleManager>
         }
     }
 
-    public void AddShipModule(ShipModule mod)
-    {
-        shipModules.Add(mod);
+    public void AddShipModule(ShipModule mod) {
+        this.shipModules.Add(mod);
     }
 
-    public void AddShipModule(string moduleName, int moduleID, int modulePartIndex)
-    {
-        genericModule = new ShipModule(moduleName, moduleID, modulePartIndex);
-        shipModules.Add(genericModule);
+    public void AddShipModule(string moduleName, int moduleID, int modulePartIndex) {
+        this.genericModule = new ShipModule(moduleName, moduleID, modulePartIndex);
+        this.shipModules.Add(genericModule);
     }
 
-    public void AddShipModule(string moduleName, int moduleID, int modulePartIndex, Vector2 modulePosition)
-    {
-        genericModule = new ShipModule(moduleName, moduleID, modulePartIndex, modulePosition);
-        shipModules.Add(genericModule);
+    public void AddShipModule(string moduleName, int moduleID, int modulePartIndex, Vector2 modulePosition) {
+        this.genericModule = new ShipModule(moduleName, moduleID, modulePartIndex, modulePosition);
+        this.shipModules.Add(genericModule);
     }
 
-    public void SetCoordinates(int moduleID, Vector2 modulePositon)
-    {
-        genericModule = shipModules.Find(x => x.moduleID == moduleID);
-        genericModule.modulePosition = modulePositon;
+    public void SetCoordinates(int moduleID, Vector2 modulePositon) {
+        this.genericModule = shipModules.Find(x => x.moduleID == moduleID);
+        this.genericModule.modulePosition = modulePositon;
     }
 
 
-    public List<ShipModule> GetModuleTypeList(int moduleID)
-    {
+    public List<ShipModule> GetModuleTypeList(int moduleID) {
         List<ShipModule> test = shipModules.FindAll(x => x.moduleID == moduleID);
         return test;
     }

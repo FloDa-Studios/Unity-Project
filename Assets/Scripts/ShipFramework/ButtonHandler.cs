@@ -9,7 +9,14 @@ using System.Text.RegularExpressions;
 
 public class ButtonHandler : MonoBehaviour
 {
+    public GameObject shipNameUI;
     public GameObject infoPanel;
+    public GameObject buildMode;
+    public GameObject inspectMode;
+
+    public GameObject shipDataGO;
+    private ShipDataControl shipData;
+
     bool buildActive = false;
     bool infoActive = false;
     List<string> strList = new List<string>();
@@ -25,8 +32,9 @@ public class ButtonHandler : MonoBehaviour
         string resultString = Regex.Match(name, @"\d+").Value;
         int number = Int32.Parse(resultString);
         ShipFramework.Instance.shipIndex = number;
-        GameObject.Find("ShipNameUI").GetComponentInChildren<TextMeshProUGUI>().text = EventSystem.current.currentSelectedGameObject.name;
-        GameObject.Find("ShipData").GetComponent<ShipDataControl>().LoadCrewPreset();
+        shipNameUI.GetComponentInChildren<TextMeshProUGUI>().text = EventSystem.current.currentSelectedGameObject.name;
+        shipData = shipDataGO.GetComponent<ShipDataControl>();
+        shipData.LoadShipPreset();
     }
 
     public void ButtonInfoPanelClick()
@@ -47,14 +55,14 @@ public class ButtonHandler : MonoBehaviour
     {
         if (buildActive)
         {
-            GameObject.Find("BuildMode").GetComponent<Canvas>().enabled = false;
-            GameObject.Find("InspectMode").GetComponent<Canvas>().enabled = true;
+            buildMode.GetComponent<Canvas>().enabled = false;
+            inspectMode.GetComponent<Canvas>().enabled = true;
             buildActive = false;
         }
         else
         {
-            GameObject.Find("BuildMode").GetComponent<Canvas>().enabled = true;
-            GameObject.Find("InspectMode").GetComponent<Canvas>().enabled = false;
+            buildMode.GetComponent<Canvas>().enabled = true;
+            inspectMode.GetComponent<Canvas>().enabled = false;
             buildActive = true;
         }
     }
@@ -111,14 +119,22 @@ public class ButtonHandler : MonoBehaviour
 
     public void CrewSave()
     {
-        ShipDataControl obj = GameObject.Find("ShipData").GetComponent<ShipDataControl>();
-        obj.SaveCrewPreset();
+        ShipDataControl obj = shipData.GetComponent<ShipDataControl>();
+        obj.SaveShipPreset();
     }
 
     public void CrewLoad()
     {
-        ShipDataControl obj = GameObject.Find("ShipData").GetComponent<ShipDataControl>();
-        obj.LoadCrewPreset();
+        ShipDataControl obj = shipData.GetComponent<ShipDataControl>();
+        obj.LoadShipPreset();
+    }
+
+    public void ShipSave() {
+        shipData.SaveShipPreset();
+    }
+
+    public void ShipLoad() {
+        shipData.LoadShipPreset();
     }
 
     public void AddCrewManClick()

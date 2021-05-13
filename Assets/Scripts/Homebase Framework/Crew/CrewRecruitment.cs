@@ -11,11 +11,12 @@ using System;
 
 public class CrewRecruitment : MonoBehaviour
 {
-    CrewMan man;
-    int value;
     public int amount;
-    Color color = new Color();
-    List<CrewMan> crewMen = new List<CrewMan>();
+
+    private CrewMan man;
+    private int value;  
+    private Color color = new Color();
+    private List<CrewMan> crewMen = new List<CrewMan>();
 
     // Start is called before the first frame update
     void Start()

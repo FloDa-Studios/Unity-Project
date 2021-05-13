@@ -69,7 +69,7 @@ public class CrewMan
 
 public class CrewManagement : ClassInstance<CrewManagement>
 {
-    bool ranOnce;
+    private CrewManagement crewManager = null;
 
     public int crewMax;
     public int crewCount;
@@ -87,32 +87,47 @@ public class CrewManagement : ClassInstance<CrewManagement>
     public List<CrewMan> crewMen;
     public List<TileBase> tiles;
 
-    protected CrewManagement() { }
+    protected CrewManagement() {
 
-    public void Initialize()
-    {
+        LoadCrewMen();
+
+        Debug.Log("CrewManagement Light initialisert!");
+    }
+
+    protected CrewManagement(ShipGrid grid) {
+        this.crewMen = new List<CrewMan>();
+        this.tiles = new List<TileBase>();
+        this.crewMax = 0;
+        this.crewCount = 0;
+
+        UpdateCrew(grid);
+        LoadCrewMen();
+
         Debug.Log("CrewManagement initialisert!");
     }
 
-    public void Initialize(int crewMax, int crewCount, ShipGrid grid)
-    {
-        crewMen = new List<CrewMan>();
-        tiles = new List<TileBase>();
-
-        if (!ranOnce)
-        {
-            Debug.Log("CrewManagement initialisert!");
-            UpdateCrew(grid);
-            ranOnce = true;
+    /// <summary>
+    /// Light Singleton Constructor, only loads CrewMen Database for access.
+    /// </summary>
+    public void Initialize() {
+        if (this.crewManager == null) {
+            this.crewManager = new CrewManagement();
         }
+    }
 
-
-        LoadCrewMen();
+    /// <summary>
+    /// Singleton Constructor, loads CrewMen Database and Initializes the Working Spots on the ShipGrid.
+    /// </summary>
+    public void Initialize(ShipGrid grid) {   
+        if (this.crewManager == null) {
+            this.crewManager = new CrewManagement(grid);
+        }
     }
 
     public void UpdateCrew(ShipGrid grid)
     {
         SetModuleAmounts(grid);
+
         crewCount = crewMen.Count;
         crewMax = maxCockpit + maxHardpoints + maxReactor + maxEngineroom;
 

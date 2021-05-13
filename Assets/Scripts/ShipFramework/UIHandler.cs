@@ -38,7 +38,7 @@ public class UIHandler : ClassInstance<UIHandler>
             Destroy(GameObject.Find("Hp"));
         }
         
-        Ship ship = ShipFramework.Instance.ships.Find(x => x.shipName == "Ship " + ShipFramework.Instance.shipIndex);
+        Ship ship = ShipFramework.Instance.ships.Find(x => x.getShipName() == "Ship " + ShipFramework.Instance.shipIndex);
 
         GameObject hp = new GameObject("Hp");
         hp.transform.parent = GameObject.Find("ShipHPUI").transform;
